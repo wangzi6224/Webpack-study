@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <!--静态资源内联, 由于是使用Html-webpack-plugin插件, 所以可以使用ejs模本引擎的语法, raw-loader插件就是源码引入的插件-->
+    <%= require('raw-loader!./meta.html') %>
+    <title>Title</title>
+    <script><%= require('raw-loader!babel-loader!../../node_modules/lib-flexible/flexible.js') %></script>
+</head>
+<body>
+    <div id="root"></div>
+</body>
+</html>
