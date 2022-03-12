@@ -82,7 +82,7 @@ const setMPA = () => {
     }
 }
 
-const {entry, htmlWebpackPlugins} = setMPA()
+const {entry, htmlWebpackPlugins} = setMPA();
 
 module.exports = {
     /**

@@ -1,5 +1,7 @@
 const path = require("path");
 const webpack = require("webpack");
+const glob = require("glob");
+const HtmlWebpackPlugin = require("html-webpack-plugin");
 
 /**
  * 占位符:
@@ -13,6 +15,58 @@ const webpack = require("webpack");
  * [emoji]: 一个随机的指带文件内容的emoji;
  * */
 
+const setMPA = () => {
+    const entry = {}; // 定义入口
+    const htmlWebpackPlugins = []; // 定义多页面的html使用的插件
+    /**
+     * 通过glob.sync 同步匹配src下面的所有有文件
+     * */
+    const entryFiles = glob.sync(path.join(__dirname, './src/*/index.js'))
+
+    Object.keys(entryFiles).map(index => {
+        const entryFile = entryFiles[index];
+        const pageName = entryFile.match(/src\/(.*)\/index\.js/);
+        /**
+         * [
+         *   'src/index/index.js',
+         *   'index',
+         *   index: 41,
+         *   input: '/Users/wangzilong/Projects/Webpack-study/src/index/index.js',
+         *   groups: undefined
+         * ]
+         * [
+         *   'src/search/index.js',
+         *   'search',
+         *   index: 41,
+         *   input: '/Users/wangzilong/Projects/Webpack-study/src/search/index.js',
+         *   groups: undefined
+         * ]
+         * */
+        entry[pageName[1]] = entryFile;
+        htmlWebpackPlugins.push(
+            new HtmlWebpackPlugin({
+                template: path.join(__dirname, `src/${pageName[1]}/index.html`),
+                filename: `${pageName[1]}.html`, // 指定打包出的文件名
+                chunks: [pageName[1]], // 生成的html使用哪些chunk
+                inject: true, // js或者css自动注入
+                minify: {
+                    html5: true,
+                    collapseWhitespace: true,
+                    preserveLineBreaks: false,
+                    minifyCSS: true,
+                    minifyJS: true,
+                    removeComments: true,
+                }
+            })
+        )
+    })
+    return {
+        entry, htmlWebpackPlugins
+    }
+};
+
+const {entry, htmlWebpackPlugins} = setMPA()
+
 module.exports = {
     /**
      * entry: 入口文件,
@@ -22,7 +76,7 @@ module.exports = {
      *     app1: '路径1'
      * }
      * */
-    entry: './src/index.js',
+    entry,
     /**
      * output: 打包之后的输出写入磁盘;
      * 如果多入口配置: output内 filename字段的 输出文件名需要用 [name] 进行占位, 例如 [name].js
@@ -111,7 +165,7 @@ module.exports = {
                 use: [{
                     loader: "url-loader",
                     options: {
-                        name: "img/[name][hash:8].[ext]",
+                        name: "[name]_[hash:8].[ext]",
                         limit: 10240, // 对图片进行限制,如果小于10kb的话, 会进行base64转换
                     }
                 }]
@@ -127,7 +181,7 @@ module.exports = {
          * webpack.HotModuleReplacementPlugin 没有必要加, hot: true 会自动引入这个 plugin
         * */
         // new webpack.HotModuleReplacementPlugin()
-    ],
+    ].concat(htmlWebpackPlugins),
     devServer: {
         /**
          * static: 告诉服务器内容的来源
@@ -148,5 +202,6 @@ module.exports = {
          * 4. 监听原文件的变化, 一旦变化,  Wabpack Dev Server就会用 HMR Server通知浏览器的HMR Runtime及时尽心更新文件, 已达到热更新的效果;
         * */
         hot: true
-    }
+    },
+    devtool: "source-map"
 }

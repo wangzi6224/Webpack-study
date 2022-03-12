@@ -4,6 +4,7 @@ import './index.less';
 import img from './image/logo_pc@2x.png'
 
 export const Helloworld = () => {
+    debugger
     return (
         <div className="container">
             Hello world
