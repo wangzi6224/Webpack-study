@@ -5,12 +5,25 @@ import img from './image/logo_pc@2x.png'
 import Hello from "../components/Hello";
 
 export const Helloworld = () => {
-    debugger
+    // const [MyText, setMyText] = useState(null);
+
+    /*const loadComponent = () => {
+        /!**
+         * 使用动态懒加载, 需要通过babel中的 @babel/plugin-syntax-dynamic-import 插件进行动态懒加载, import方法返回一个Promise
+        * *!/
+        import("../components/Text").then(res => {
+            setMyText(res.default)
+        })
+    }*/
+
     return (
         <div className="container">
             Hello world
             <Hello/>
-            <img src={img} alt=""/>
+            {/*{
+                MyText && <MyText/>
+            }*/}
+            <img onClick={loadComponent} src={img} alt=""/>
             <p style={{color: "#110199"}}>124411</p>
         </div>
     )

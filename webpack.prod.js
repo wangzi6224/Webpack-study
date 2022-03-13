@@ -102,7 +102,7 @@ module.exports = {
         path: path.join(__dirname, 'dist'),
         filename: "[name]_[chunkhash:8].js"
     },
-    mode: "production",
+    mode: "production", // production 默认开启tree-shaking
     /**
      * watch: 文件监听; (生产默认不用监听)
      * 默认是false,
