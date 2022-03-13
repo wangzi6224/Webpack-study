@@ -14,7 +14,7 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const {CleanWebpackPlugin} = require("clean-webpack-plugin");
-
+const ESLintPlugin = require('eslint-webpack-plugin');
 
 /**
  * 占位符:
@@ -293,6 +293,12 @@ module.exports = {
         /**
          * CleanWebpackPlugin: 每次构建先清空dist目录
         * */
-        new CleanWebpackPlugin()
+        new CleanWebpackPlugin(),
+        /**
+         * ESLintPlugin: 开启eslint插件, 需要安装, eslint配置在跟目录下 创建 ".eslintrc.js" 文件进行配置
+         * 不太会配, 觉得麻烦就不配了;
+         * eslint配置官网: http://eslint.cn/
+        * */
+        // new ESLintPlugin()
     ].concat(htmlWebpackPlugins)
 }
