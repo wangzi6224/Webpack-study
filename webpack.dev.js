@@ -180,7 +180,7 @@ module.exports = {
         /**
          * webpack.HotModuleReplacementPlugin 没有必要加, hot: true 会自动引入这个 plugin
         * */
-        // new webpack.HotModuleReplacementPlugin()
+        // new webpack.HotModuleReplacementPlugin(),
     ].concat(htmlWebpackPlugins),
     devServer: {
         /**

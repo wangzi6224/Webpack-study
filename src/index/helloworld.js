@@ -1,7 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import './index.less';
-import img from '../../Public/assets/images/logo_pc@2x.png'
+import img from '../../public/assets/images/logo_pc@2x.png'
 import Hello from "../components/Hello";
 
 export const Helloworld = () => {
