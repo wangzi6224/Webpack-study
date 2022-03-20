@@ -25,11 +25,11 @@ const SpeedMeasureWebpackPlugin = require("speed-measure-webpack-plugin");
  * webpack-bundle-analyzer：打包后对文件模块大小进行分析，build之后，会开启一个port：8888的页面
  * 文档地址：https://github.com/webpack-contrib/webpack-bundle-analyzer
 * */
-const {BundleAnalyzerPlugin} = require("webpack-bundle-analyzer");
+// const {BundleAnalyzerPlugin} = require("webpack-bundle-analyzer");
 /**
  * HappyPack: 通过启动webpack
 * */
-const HappyPack = require("happypack")
+// const HappyPack = require("happypack")
 
 const smp = new SpeedMeasureWebpackPlugin();
 
@@ -171,7 +171,9 @@ module.exports = smp.wrap({
                  * */
                 test: /\.css/,
                 use: [
-                    "style-loader",
+                    // "style-loader", // style-loader无法和css文件提取一起使用的
+                    MiniCssExtractPlugin.loader,
+                    // "style-loader",
                     "css-loader"
                 ]
             },
@@ -183,8 +185,6 @@ module.exports = smp.wrap({
                  * */
                 test: /\.less/,
                 use: [
-                    // "style-loader", // style-loader无法和css文件提取一起使用的
-                    MiniCssExtractPlugin.loader,
                     "css-loader",
                     "less-loader",
                     /**
@@ -305,7 +305,7 @@ module.exports = smp.wrap({
         * */
         // new ESLintPlugin()
         new WebpackPluginLogger(),
-        new BundleAnalyzerPlugin(),
+        // new BundleAnalyzerPlugin(),
         /*new HappyPack({
             loaders:[
                 'babel-loader'
