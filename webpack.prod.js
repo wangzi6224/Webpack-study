@@ -15,6 +15,23 @@ const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const {CleanWebpackPlugin} = require("clean-webpack-plugin");
 const ESLintPlugin = require('eslint-webpack-plugin');
+const WebpackPluginLogger = require("./webpack-plugin-logger");
+/**
+ * 分析构建速度插件
+ * 文档地址：https://www.npmjs.com/package/speed-measure-webpack-plugin
+* */
+const SpeedMeasureWebpackPlugin = require("speed-measure-webpack-plugin");
+/**
+ * webpack-bundle-analyzer：打包后对文件模块大小进行分析，build之后，会开启一个port：8888的页面
+ * 文档地址：https://github.com/webpack-contrib/webpack-bundle-analyzer
+* */
+const {BundleAnalyzerPlugin} = require("webpack-bundle-analyzer");
+/**
+ * HappyPack: 通过启动webpack
+* */
+const HappyPack = require("happypack")
+
+const smp = new SpeedMeasureWebpackPlugin();
 
 /**
  * 占位符:
@@ -84,7 +101,7 @@ const setMPA = () => {
 
 const {entry, htmlWebpackPlugins} = setMPA();
 
-module.exports = {
+module.exports = smp.wrap({
     /**
      * entry: 入口文件,
      * 可以是多入口, 如果是单入口的, 就是字符串, 如果是多入口的就是:
@@ -141,7 +158,12 @@ module.exports = {
                  * 通过配置 babeIrc
                  * */
                 test: /\.js$/,
-                use: "babel-loader",
+                use: 'babel-loader',
+                /**
+                 * 如果开启happyPack，需要在此处配置happyPack的loader，
+                 * 然后在Plugins数组内，实例话HappyPack，入参的loaders配置项内写入babel-loader等插件
+                * */
+                // use: 'happypack/loader',
             },
             {
                 /**
@@ -273,24 +295,6 @@ module.exports = {
             filename: "[name]_[contenthash:8].css"
         }),
         /**
-         * HtmlWebpackPlugin: 是对HTML进行压缩的插件
-         * 文档地址: https://webpack.docschina.org/plugins/html-webpack-plugin/#root
-        * */
-        /*new HtmlWebpackPlugin({
-            template: path.join(__dirname, "src/index.html"),
-            filename: "index.html", // 指定打包出的文件名
-            chunks: ["index"], // 生成的html使用哪些chunk
-            inject: true, // js或者css自动注入
-            minify: {
-                html5: true,
-                collapseWhitespace: true,
-                preserveLineBreaks: false,
-                minifyCSS: true,
-                minifyJS: true,
-                removeComments: true,
-            }
-        }),*/
-        /**
          * CleanWebpackPlugin: 每次构建先清空dist目录
         * */
         new CleanWebpackPlugin(),
@@ -300,5 +304,12 @@ module.exports = {
          * eslint配置官网: http://eslint.cn/
         * */
         // new ESLintPlugin()
+        new WebpackPluginLogger(),
+        new BundleAnalyzerPlugin(),
+        /*new HappyPack({
+            loaders:[
+                'babel-loader'
+            ]
+        })*/
     ].concat(htmlWebpackPlugins)
-}
+})

@@ -2,6 +2,8 @@ const path = require("path");
 const webpack = require("webpack");
 const glob = require("glob");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const {CleanWebpackPlugin} = require("clean-webpack-plugin");
 
 /**
  * 占位符:
@@ -149,13 +151,13 @@ module.exports = {
                     "less-loader"
                 ]
             },
-            {
-                /**
+            /*{
+                /!**
                  * 解析file
-                * */
+                * *!/
                 test: /.(png|jpg|jpeg|gif)$/,
                 use: "file-loader"
-            },
+            },*/
             {
                 /**
                  * url-loader: 也可以处理静态资源, 处理图片和文字,
@@ -172,15 +174,46 @@ module.exports = {
             }
         ]
     },
-    /**
+        /**
      * plugins: 插件, 用于整个构建过程;
      * 插件用于优化bundle文件, 资源管理和环境变量注入;
-    * */
+     * */
     plugins: [
         /**
-         * webpack.HotModuleReplacementPlugin 没有必要加, hot: true 会自动引入这个 plugin
+         * MiniCssExtractPlugin: 将css提取成一个独立的文件;
+         * 文档地址: https://webpack.docschina.org/plugins/mini-css-extract-plugin/
         * */
-        // new webpack.HotModuleReplacementPlugin(),
+        new MiniCssExtractPlugin({
+            filename: "[name]_[contenthash:8].css"
+        }),
+        /**
+         * HtmlWebpackPlugin: 是对HTML进行压缩的插件
+         * 文档地址: https://webpack.docschina.org/plugins/html-webpack-plugin/#root
+        * */
+        /*new HtmlWebpackPlugin({
+            template: path.join(__dirname, "src/index.html"),
+            filename: "index.html", // 指定打包出的文件名
+            chunks: ["index"], // 生成的html使用哪些chunk
+            inject: true, // js或者css自动注入
+            minify: {
+                html5: true,
+                collapseWhitespace: true,
+                preserveLineBreaks: false,
+                minifyCSS: true,
+                minifyJS: true,
+                removeComments: true,
+            }
+        }),*/
+        /**
+         * CleanWebpackPlugin: 每次构建先清空dist目录
+        * */
+        new CleanWebpackPlugin(),
+        /**
+         * ESLintPlugin: 开启eslint插件, 需要安装, eslint配置在跟目录下 创建 ".eslintrc.js" 文件进行配置
+         * 不太会配, 觉得麻烦就不配了;
+         * eslint配置官网: http://eslint.cn/
+        * */
+        // new ESLintPlugin()
     ].concat(htmlWebpackPlugins),
     devServer: {
         /**

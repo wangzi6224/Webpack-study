@@ -1,27 +1,19 @@
 {
-  "name": "Webpack-study",
+  "name": "builder-webpack",
   "version": "1.0.0",
   "description": "",
-  "main": "src/index/index.js",
+  "main": "index.js",
   "scripts": {
-    "build": "webpack --config webpack.prod.js",
-    "watch": "webpack --watch",
-    "dev": "webpack-dev-server --config webpack.dev.js --open",
-    "build:stats": "webpack --config webpack.prod.js --json > stats.json"
-  },
-  "lint-staged": {
-    "*.{ts,tsx,js,jsx}": [
-      "npm run lint:eslint:fix",
-      "git add --force"
-    ],
-    "*.{md,json}": [
-      "prettier --write",
-      "git add --force"
-    ]
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "eslint": "eslint ./lib --fix",
+    "build": "webpack --config ./lib/webpack.prod.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "dependencies": {
+    "webpack-merge": "^5.8.0"
+  },
   "devDependencies": {
     "@babel/core": "^7.17.5",
     "@babel/eslint-parser": "^7.17.0",
@@ -36,47 +28,25 @@
     "css-minimizer-webpack-plugin": "^3.4.1",
     "eslint": "^8.11.0",
     "eslint-config-airbnb": "^19.0.4",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.25.4",
     "eslint-plugin-jsx-a11y": "^6.5.1",
+    "eslint-plugin-react": "^7.29.4",
+    "eslint-plugin-react-hooks": "^4.3.0",
     "eslint-webpack-plugin": "^3.1.1",
     "file-loader": "^6.2.0",
     "glob": "^7.2.0",
-    "happypack": "^5.0.1",
     "html-webpack-plugin": "^5.5.0",
-    "i": "^0.3.7",
     "less-loader": "^10.2.0",
     "mini-css-extract-plugin": "^2.6.0",
-    "npm": "^8.5.5",
     "postcss-loader": "^6.2.1",
     "postcss-preset-env": "^7.4.2",
     "px2rem-loader": "^0.1.9",
     "raw-loader": "^0.5.1",
-    "speed-measure-webpack-plugin": "^1.5.0",
     "style-loader": "^3.3.1",
     "url-loader": "^4.1.1",
     "webpack": "^5.70.0",
-    "webpack-bundle-analyzer": "^4.5.0",
     "webpack-cli": "^4.9.2",
     "webpack-dev-server": "^4.7.4"
-  },
-  "browserslist": {
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ],
-    "production": [
-      ">0.1%",
-      "not dead",
-      "not op_mini all"
-    ]
-  },
-  "dependencies": {
-    "antd": "^4.19.2",
-    "axios": "^0.26.1",
-    "lib-flexible": "^0.3.2",
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2",
-    "react-router": "^6.2.2",
-    "redux": "^4.1.2"
   }
 }
