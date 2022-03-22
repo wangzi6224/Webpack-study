@@ -22,20 +22,35 @@ const WebpackPluginLogger = require("./webpack-plugin-logger");
  * 文档地址：https://www.npmjs.com/package/speed-measure-webpack-plugin
 * */
 const SpeedMeasureWebpackPlugin = require("speed-measure-webpack-plugin");
+
+/*------------------------------------------------------------------------*/
+
 /**
  * webpack-bundle-analyzer：打包后对文件模块大小进行分析，build之后，会开启一个port：8888的页面
  * 文档地址：https://github.com/webpack-contrib/webpack-bundle-analyzer
 * */
 // const {BundleAnalyzerPlugin} = require("webpack-bundle-analyzer");
+
+/*------------------------------------------------------------------------*/
+
+
 /**
  * HappyPack: 通过启动webpack
 * */
 // const HappyPack = require("happypack")
+
+/*------------------------------------------------------------------------*/
+
+
 /**
  * TerserPlugin: 多线程压缩代码;
  * 文档地址：https://webpack.docschina.org/plugins/terser-webpack-plugin/
 * */
 const TerserPlugin = require("terser-webpack-plugin");
+
+/*------------------------------------------------------------------------*/
+
+
 /**
  * HardSourceWebpackPlugin: 不能再Webpack5中使用，会报 "Error: Cannot find module 'webpack/lib/DependenciesBlockVariable'"的错误，
  * 由于 Webpack5中将DependenciesBlockVariable这个功能删除掉了， 所以会报错；
@@ -43,6 +58,9 @@ const TerserPlugin = require("terser-webpack-plugin");
  * 文档地址：https://github.com/mzgoddard/hard-source-webpack-plugin#readme
 * */
 // const HardSourceWebpackPlugin = require("hard-source-webpack-plugin");
+
+/*------------------------------------------------------------------------*/
+
 /**
  * purgecss-webpack-plugin：css的 Tree Shaking；
  * 文档地址：https://purgecss.com/
@@ -52,6 +70,9 @@ const PurgecssPlugin = require('purgecss-webpack-plugin');
 const PATH = {
     src: path.join(__dirname, 'src')
 }
+
+/*------------------------------------------------------------------------*/
+
 
 /**
  * 提升二次构建速度的思路：
