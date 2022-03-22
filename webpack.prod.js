@@ -268,6 +268,7 @@ module.exports = {
     optimization: {
         minimizer: [
             /**
+             * CssMinimizerPlugin：主要是压缩css代码，可以启动多线程压缩，提高构建效率；
              * 文档地址: https://webpack.docschina.org/plugins/css-minimizer-webpack-plugin/
             * */
             new CssMinimizerPlugin({
@@ -347,7 +348,7 @@ module.exports = {
             ]
         })*/
         /**
-         * DllReferencePlugin: 配合DllPlugin导出的 manifest.json 去引用指定模块进行分包， 较少构建的体积
+         * DllReferencePlugin: 配合DllPlugin导出的 manifest.json 去引用指定模块进行分包，较少构建的体积。
         * */
         /* new webpack.DllReferencePlugin({
             manifest: require("./build/library/manifest.json")
