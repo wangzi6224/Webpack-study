@@ -1,5 +1,6 @@
 import React, {useState} from "react";
 import ReactDOM from "react-dom";
+// import style from './index.less';
 import './index.less';
 import img from '../../public/assets/images/logo_pc@2x.png'
 import Hello from "../components/Hello";
@@ -19,7 +20,7 @@ export const Helloworld = () => {
     }
 
     return (
-        <div className="container">
+        <div className='container'>
             Hello world
             <Hello/>
             {

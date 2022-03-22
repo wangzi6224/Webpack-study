@@ -1,4 +1,5 @@
 const path = require("path");
+const os = require("os");
 const webpack = require("webpack");
 /**
  * glob: 通过星号等 shell 所用的模式匹配文件。
@@ -30,6 +31,31 @@ const SpeedMeasureWebpackPlugin = require("speed-measure-webpack-plugin");
  * HappyPack: 通过启动webpack
 * */
 // const HappyPack = require("happypack")
+/**
+ * TerserPlugin: 多线程压缩代码;
+ * 文档地址：https://webpack.docschina.org/plugins/terser-webpack-plugin/
+* */
+const TerserPlugin = require("terser-webpack-plugin");
+/**
+ * HardSourceWebpackPlugin: 不能再Webpack5中使用，会报 "Error: Cannot find module 'webpack/lib/DependenciesBlockVariable'"的错误，
+ * 由于 Webpack5中将DependenciesBlockVariable这个功能删除掉了， 所以会报错；
+ * 如需使用缓存， 直接在配置中 cache字段 改为true
+ * 文档地址：https://github.com/mzgoddard/hard-source-webpack-plugin#readme
+* */
+// const HardSourceWebpackPlugin = require("hard-source-webpack-plugin");
+const PurgecssPlugin = require('purgecss-webpack-plugin');
+
+const PATH = {
+    src: path.join(__dirname, 'src')
+}
+
+/**
+ * 提升二次构建速度的思路：
+ * 缓存思路：
+ * babel-loader 开启缓存：提升二次解析速度
+ * terser-webpack-plugin 开启缓存：提升二次压缩速度
+ * 使用 cache-loader 或者 hard-source-webpack-plugin：用于缓存 webpack 内部模块处理的中间结果，提升二次模块转换速度
+* */
 
 const smp = new SpeedMeasureWebpackPlugin();
 
@@ -60,22 +86,6 @@ const setMPA = () => {
     Object.keys(entryFiles).map(index => {
         const entryFile = entryFiles[index];
         const pageName = entryFile.match(/src\/(.*)\/index\.js/);
-        /**
-        * [
-         *   'src/index/index.js',
-         *   'index',
-         *   index: 41,
-         *   input: '/Users/wangzilong/Projects/Webpack-study/src/index/index.js',
-         *   groups: undefined
-         * ]
-         * [
-         *   'src/search/index.js',
-         *   'search',
-         *   index: 41,
-         *   input: '/Users/wangzilong/Projects/Webpack-study/src/search/index.js',
-         *   groups: undefined
-         * ]
-        * */
         entry[pageName[1]] = entryFile;
         htmlWebpackPlugins.push(
             new HtmlWebpackPlugin({
@@ -121,30 +131,6 @@ module.exports = smp.wrap({
     },
     mode: "production", // production 默认开启tree-shaking
     /**
-     * watch: 文件监听; (生产默认不用监听)
-     * 默认是false,
-     * 原理: 首先webpack会轮询文件的最后修改时间, 并且存储起来, 某个文件发生了变化, 并不会理解告诉监听者, 而是线缓存起来, 等aggregateTimeout配置的时长后才执行;
-     * */
-    // watch: true,
-    /**
-     * watchOptions:文件监听配置项;
-     * 只有在watch为true开启的时候才有意义
-     * */
-    watchOptions: {
-        /**
-         * ignored: 默认为空, 不坚挺的文件或者文件件, 支持正则匹配, 坚挺的文件越少, 性能会越好.
-         * */
-        ignored: /node_modules/,
-        /**
-         * 监听文件变化后300ms后才会执行, 默认300ms
-         * */
-        aggregateTimeout: 300,
-        /**
-         * poll: 判断文件是否发生变化, 标识轮询的周期, 默认是1000ms
-         * */
-        poll: 1000
-    },
-    /**
      * 1. 在module字段内指定rules字段, 定义loader;
      * 2. rules是一个数组, 数组内每一个对象有几个字段:
      *  a. test: 匹配文件后缀, 指定匹配规则;
@@ -158,7 +144,24 @@ module.exports = smp.wrap({
                  * 通过配置 babeIrc
                  * */
                 test: /\.js$/,
-                use: 'babel-loader',
+                use: [
+                    {
+                        loader: "thread-loader",
+                        options: {
+                            workers: 3
+                        }
+                    },
+                    /**
+                     * cacheDirectory: 主要是开启构建之后的缓存，提升二次构建的速率；
+                     * 开启缓存后，会把所有缓存的文件 缓存到node_module下面的 .cache文件夹内
+                    * */
+                    {
+                        loader: 'babel-loader',
+                        options: {
+                            cacheDirectory: true
+                        }
+                    }
+                ],
                 /**
                  * 如果开启happyPack，需要在此处配置happyPack的loader，
                  * 然后在Plugins数组内，实例话HappyPack，入参的loaders配置项内写入babel-loader等插件
@@ -174,7 +177,7 @@ module.exports = smp.wrap({
                     // "style-loader", // style-loader无法和css文件提取一起使用的
                     MiniCssExtractPlugin.loader,
                     // "style-loader",
-                    "css-loader"
+                    // "css-loader"
                 ]
             },
             {
@@ -185,6 +188,7 @@ module.exports = smp.wrap({
                  * */
                 test: /\.less/,
                 use: [
+                    "style-loader",
                     "css-loader",
                     "less-loader",
                     /**
@@ -244,9 +248,13 @@ module.exports = smp.wrap({
              * 文档地址: https://webpack.docschina.org/plugins/css-minimizer-webpack-plugin/
             * */
             new CssMinimizerPlugin({
-                test: /\.css$/,
+                test: /\.less$/,
                 parallel: 4 //使用多进程并发执行，提升构建速度 Boolean|Number 默认值：true, Number代表并发进程数量
             }),
+            new TerserPlugin({
+                parallel: os.cpus().length - 1,
+                // cache: true
+            })
         ],
         /**
          * splitChunks: 对公共模块进行拆包分离提取;
@@ -255,6 +263,10 @@ module.exports = smp.wrap({
          * minSize: 分离的包体积的大小(字节);
          * maxAsyncRequests: 每次浏览器异步请求资源的并发数;
          * 文档地址: https://webpack.docschina.org/plugins/split-chunks-plugin
+         *
+         * -------->DllPlugin可以一起使用。 DllPlugin 通常用于基础包（框架包、业务包）的分离。
+         * -------->SplitChunks 虽然也可以做 DllPlugin 的事情，但是更加推荐使用 SplitChunks 去提取页面间的公共 js 文件。
+         * -------->因为使用 SplitChunks 每次去提取基础包还是需要耗费构建时间的，如果是 DllPlugin 只需要预编译一次，后面的基础包时间都可以省略掉。
         * */
         splitChunks: {
             chunks: 'all',
@@ -292,7 +304,8 @@ module.exports = smp.wrap({
          * 文档地址: https://webpack.docschina.org/plugins/mini-css-extract-plugin/
         * */
         new MiniCssExtractPlugin({
-            filename: "[name]_[contenthash:8].css"
+            filename: "[name]_[contenthash:8].css",
+            chunkFilename: '[id].css',
         }),
         /**
          * CleanWebpackPlugin: 每次构建先清空dist目录
@@ -311,5 +324,25 @@ module.exports = smp.wrap({
                 'babel-loader'
             ]
         })*/
-    ].concat(htmlWebpackPlugins)
+        /**
+         * DllReferencePlugin: 配合DllPlugin导出的 manifest.json 去引用指定模块进行分包， 较少构建的体积
+         *
+        * */
+        /* new webpack.DllReferencePlugin({
+            manifest: require("./build/library/manifest.json")
+        }) */
+        // new HardSourceWebpackPlugin(),
+        /*new PurgecssPlugin({
+            paths: glob.sync(`${PATH.src}/!**!/!*`, {nodir: true})
+        })*/
+    ].concat(htmlWebpackPlugins),
+    resolve: {
+        alias: {
+            "react": path.join(__dirname, './node_modules/react/umd/react.production.min.js'),
+            "react-dom": path.join(__dirname, './node_modules/react-dom/umd/react-dom.production.min.js'),
+        },
+        extensions:['.js'],
+        mainFields: ['main']
+    },
+    cache: true
 })
