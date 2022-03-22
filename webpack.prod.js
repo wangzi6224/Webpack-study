@@ -43,6 +43,10 @@ const TerserPlugin = require("terser-webpack-plugin");
  * 文档地址：https://github.com/mzgoddard/hard-source-webpack-plugin#readme
 * */
 // const HardSourceWebpackPlugin = require("hard-source-webpack-plugin");
+/**
+ * purgecss-webpack-plugin：css的 Tree Shaking；
+ * 文档地址：https://purgecss.com/
+* */
 const PurgecssPlugin = require('purgecss-webpack-plugin');
 
 const PATH = {
@@ -111,7 +115,7 @@ const setMPA = () => {
 
 const {entry, htmlWebpackPlugins} = setMPA();
 
-module.exports = smp.wrap({
+module.exports = {
     /**
      * entry: 入口文件,
      * 可以是多入口, 如果是单入口的, 就是字符串, 如果是多入口的就是:
@@ -174,10 +178,9 @@ module.exports = smp.wrap({
                  * */
                 test: /\.css/,
                 use: [
-                    // "style-loader", // style-loader无法和css文件提取一起使用的
                     MiniCssExtractPlugin.loader,
                     // "style-loader",
-                    // "css-loader"
+                    "css-loader" // style-loader无法和css文件提取一起使用的
                 ]
             },
             {
@@ -188,14 +191,13 @@ module.exports = smp.wrap({
                  * */
                 test: /\.less/,
                 use: [
-                    "style-loader",
+                    MiniCssExtractPlugin.loader,
                     "css-loader",
                     "less-loader",
                     /**
                      * postcss-loader: 是一个处理css的loader;
                      * 在webpack调用次loader的时候, 默认会查找目录下的postcss.config.js的配置文件,
                      * */
-                    "postcss-loader",
                     /*{
                         /!**
                          * 在做移动端适配的时候, 使用px2rem-loader
@@ -248,7 +250,7 @@ module.exports = smp.wrap({
              * 文档地址: https://webpack.docschina.org/plugins/css-minimizer-webpack-plugin/
             * */
             new CssMinimizerPlugin({
-                test: /\.less$/,
+                test: /\.css$/,
                 parallel: 4 //使用多进程并发执行，提升构建速度 Boolean|Number 默认值：true, Number代表并发进程数量
             }),
             new TerserPlugin({
@@ -305,7 +307,6 @@ module.exports = smp.wrap({
         * */
         new MiniCssExtractPlugin({
             filename: "[name]_[contenthash:8].css",
-            chunkFilename: '[id].css',
         }),
         /**
          * CleanWebpackPlugin: 每次构建先清空dist目录
@@ -326,15 +327,14 @@ module.exports = smp.wrap({
         })*/
         /**
          * DllReferencePlugin: 配合DllPlugin导出的 manifest.json 去引用指定模块进行分包， 较少构建的体积
-         *
         * */
         /* new webpack.DllReferencePlugin({
             manifest: require("./build/library/manifest.json")
         }) */
         // new HardSourceWebpackPlugin(),
-        /*new PurgecssPlugin({
-            paths: glob.sync(`${PATH.src}/!**!/!*`, {nodir: true})
-        })*/
+        new PurgecssPlugin({
+            paths: glob.sync(`${PATH.src}/**/*`, {nodir: true})
+        })
     ].concat(htmlWebpackPlugins),
     resolve: {
         alias: {
@@ -345,4 +345,4 @@ module.exports = smp.wrap({
         mainFields: ['main']
     },
     cache: true
-})
+}
