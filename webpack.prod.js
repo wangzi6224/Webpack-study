@@ -90,8 +90,10 @@ const smp = new SpeedMeasureWebpackPlugin();
  * [name]: 文件名称;
  * [path]: 文件相对路径;
  * [folder]: 文件所在的文件夹;
- * [contenthash]: 文件的内容hash, 默认是MD5生成; ---- 如果后面接 ":" + "number", 就是表示前多少位hash
- * [hash]: 文件内容的hash, 默认是MD5生成; ---- 如果后面接 ":" + "number", 就是表示前多少位hash
+ * [hash]: hash是本次构建的唯一的hash值，全局唯一hash, 默认是MD5生成; ---- 如果后面接 ":" + "number", 就是表示前多少位hash；
+ * [chunkhash]: 该占位符主要是基于入口（Entry）的不同，构建出不同的chunkhash，常用语bundle.js文件上，该入口解析出的模块，都会是当前的这个chunkhash；
+ *              如果是动态引入（例如动态import（）需要配合babel插件进行编译）的模块，会有单独的hash；
+ * [contenthash]: 文件的（内容哈希）, 默认是MD5生成; ---- 如果后面接 ":" + "number", 就是表示前多少位hash；
  * [emoji]: 一个随机的指带文件内容的emoji;
  * */
 

@@ -44,7 +44,6 @@
     "happypack": "^5.0.1",
     "hard-source-webpack-plugin": "^0.13.1",
     "html-webpack-plugin": "^5.5.0",
-    "i": "^0.3.7",
     "less-loader": "^10.2.0",
     "mini-css-extract-plugin": "^2.6.0",
     "npm": "^8.5.5",
