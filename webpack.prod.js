@@ -16,7 +16,7 @@ const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const {CleanWebpackPlugin} = require("clean-webpack-plugin");
 const ESLintPlugin = require('eslint-webpack-plugin');
-const WebpackPluginLogger = require("./webpack-plugin-logger");
+const MyWebpackPlugin = require("./webpack-plugin-logger");
 /**
  * 分析构建速度插件
  * 文档地址：https://www.npmjs.com/package/speed-measure-webpack-plugin
@@ -342,7 +342,13 @@ module.exports = {
          * eslint配置官网: http://eslint.cn/
         * */
         // new ESLintPlugin()
-        new WebpackPluginLogger(),
+
+        /**
+         * MyWebpackPlugin: 自定义插件
+        * */
+        new MyWebpackPlugin({
+            path: path.join( __dirname)
+        }),
         // new BundleAnalyzerPlugin(),
         /*new HappyPack({
             loaders:[
