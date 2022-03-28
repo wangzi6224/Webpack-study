@@ -12,7 +12,7 @@ const PLUGIN_NAME = 'logger-plugin';
 
 /**
  * Loader模版代码：
- * // 导出一个函数，source为webpack传递给loader的文件源内容
+ * 导出一个函数，source为webpack传递给loader的文件源内容
  * module.exports = function(source) {
  *     const content = doSomeThing2JsString(source);
  *
